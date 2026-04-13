@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html, body {
+    @apply transition-colors duration-300;
+  }
+
+  /* Ensure smooth transitions for all elements when theme changes */
+  * {
+    @apply border-gray-100 dark:border-gray-800;
+  }
+}
