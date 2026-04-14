@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useGetGroups } from "../hooks/useGetGroups";
+import { useUserLocation } from "../hooks/useUserLocation";
 import GroupCard from "./GroupCard";
 import FilterBar from "./FilterBar";
 
 export default function GroupList() {
   const { data: groups, isLoading, error } = useGetGroups();
+  const { country: detectedCountry, city: detectedCity, isDetecting } = useUserLocation();
+  const hasAppliedLocation = useRef(false);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("All");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+
+  useEffect(() => {
+    if (!isDetecting && !hasAppliedLocation.current) {
+      hasAppliedLocation.current = true;
+      if (detectedCountry) {
+        setSelectedCountry(detectedCountry);
+        if (detectedCity) {
+          setSelectedCity(detectedCity);
+        }
+      }
+    }
+  }, [isDetecting, detectedCountry, detectedCity]);
 
   if (isLoading)
     return (
@@ -65,10 +81,18 @@ export default function GroupList() {
         currentCity={selectedCity}
       />
 
-      {/* Active Filter Badges */}
-      {hasActiveFilters && (
+      {(hasActiveFilters || isDetecting) && (
         <div className="flex flex-wrap gap-2 mb-6 items-center">
           <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Active:</span>
+          {isDetecting && (
+            <span className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-black px-3 py-1.5 rounded-lg border border-blue-100 dark:border-blue-800">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+              </span>
+              Detecting Location...
+            </span>
+          )}
           {searchQuery && (
             <span className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-black px-3 py-1.5 rounded-lg border border-indigo-100 dark:border-indigo-800">
               "{searchQuery}"

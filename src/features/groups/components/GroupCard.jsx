@@ -1,16 +1,38 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { useDeleteGroup } from "../hooks/useDeleteGroup";
+import { getPlatform } from "../../../lib/platforms";
 
 export default function GroupCard({ group }) {
-  const { id, title, description, topic, date, meeting_link, country, city } = group;
+  const {
+    id,
+    title,
+    description,
+    topic,
+    date,
+    meeting_link,
+    country,
+    city,
+    platform,
+  } = group;
   const { mutate: deleteGroup, isPending } = useDeleteGroup();
+  const platformInfo = getPlatform(platform);
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 hover:shadow-xl dark:hover:shadow-indigo-900/10 transition-all duration-300 transform hover:-translate-y-1 group">
       <div className="flex justify-between items-start mb-6">
-        <span className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-widest border border-indigo-100 dark:border-indigo-800 line-clamp-2">
-          {topic}
-        </span>
+        <div className="flex items-center gap-2 flex-wrap line-clamp-2">
+          <span className="bg-indigo-50 line-clamp-2 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-[10px] font-black px-3 py-1 rounded-lg uppercase tracking-widest border border-indigo-100 dark:border-indigo-800 ">
+            {topic}
+          </span>
+          {platform && (
+            <span
+              className={`flex items-center text-[10px] font-black px-3 py-1 rounded-lg border ${platformInfo.color}`}
+            >
+              {React.createElement(platformInfo.icon, { className: "mr-1 text-sm" })} {platformInfo.label}
+            </span>
+          )}
+        </div>
         <button
           onClick={(e) => {
             e.preventDefault();
@@ -27,7 +49,7 @@ export default function GroupCard({ group }) {
         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-50 mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors  line-clamp-2">
           {title}
         </h3>
-        <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed">
+        <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2 leading-relaxed ">
           {description}
         </p>
       </div>
@@ -50,7 +72,14 @@ export default function GroupCard({ group }) {
           rel="noreferrer"
           className="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-100 dark:shadow-none"
         >
-          Connect Now
+          {platform ? (
+            <span className="flex items-center justify-center gap-2">
+              {React.createElement(platformInfo.icon, { className: "text-lg" })}
+              {`Connect on ${platformInfo.label}`}
+            </span>
+          ) : (
+            "Connect Now"
+          )}
         </a>
 
         <Link

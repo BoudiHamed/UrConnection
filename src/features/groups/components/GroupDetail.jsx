@@ -1,5 +1,7 @@
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGroup } from '../hooks/useGroup';
+import { getPlatform } from '../../../lib/platforms';
 
 export default function GroupDetail() {
   const { groupId } = useParams();
@@ -20,12 +22,12 @@ export default function GroupDetail() {
 
   if (!group) return <div className="text-center p-10 text-gray-500">Group not found.</div>;
 
-  const { title, topic, description, date, meeting_link } = group;
+  const { title, topic, description, date, meeting_link, platform } = group;
+  const platformInfo = getPlatform(platform);
 
   return (
     <div className="max-w-3xl mx-auto py-8">
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
-        {/* Header - Indigo background */}
         <div className="bg-indigo-600 dark:bg-indigo-950 p-8 md:p-12 text-white">
           <button 
             onClick={() => navigate('/')}
@@ -34,9 +36,16 @@ export default function GroupDetail() {
             ← Back to Groups
           </button>
           
-          <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest border border-white/20">
-            {topic}
-          </span>
+          <div className="flex flex-wrap items-center gap-2 mb-6">
+            <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest border border-white/20">
+              {topic}
+            </span>
+            {platform && (
+              <span className={`flex items-center text-xs font-bold px-4 py-1.5 rounded-full border ${platformInfo.color}`}>
+                {React.createElement(platformInfo.icon, { className: "mr-1.5 text-sm" })} {platformInfo.label}
+              </span>
+            )}
+          </div>
           
           <h1 className="text-4xl md:text-5xl font-black mt-6 leading-tight">
             {title}
@@ -55,14 +64,13 @@ export default function GroupDetail() {
           </div>
         </div>
         
-        {/* Content */}
         <div className="p-8 md:p-12">
           <div className="mb-10">
             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-              <span className="w-8 h-8 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg flex items-center justify-center mr-3 text-sm">📝</span>
+              <span className="w-8 h-8 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg flex items-center justify-center mr-3 text-sm  ">📝</span>
               Description
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 break-all ">
               {description}
             </p>
           </div>
@@ -80,13 +88,16 @@ export default function GroupDetail() {
               className="group block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl transition-all shadow-xl shadow-indigo-100 dark:shadow-none transform hover:-translate-y-1"
             >
               <span className="flex items-center justify-center gap-2">
-                Join This Group
+                {platform && React.createElement(platformInfo.icon, { className: "text-xl" })}
+                {platform ? `Join on ${platformInfo.label}` : "Join This Group"}
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </span>
             </a>
             
             <p className="text-center text-sm text-gray-400">
-              Make sure you have the meeting app installed.
+              {platform
+                ? `Make sure you have ${platformInfo.label} installed.`
+                : "Make sure you have the meeting app installed."}
             </p>
           </div>
         </div>
