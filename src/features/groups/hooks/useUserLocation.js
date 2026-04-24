@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { COUNTRIES_CITIES } from '../../../lib/countries';
 
 const LOCATION_STORAGE_KEY = 'ur_connections_user_location';
@@ -57,64 +57,73 @@ function findMatchingCity(country, apiCity) {
   return match || '';
 }
 
+const EMPTY_LOCATION = { country: '', city: '' };
+
+/**
+ * Async function that:
+ * 1. Checks localStorage for a cached result first.
+ * 2. If not cached, calls the IP-based geolocation API.
+ * 3. Caches the result in localStorage for future sessions.
+ */
+async function fetchLocation() {
+  // 1. Check localStorage cache first
+  try {
+    const cached = localStorage.getItem(LOCATION_STORAGE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed?.country !== undefined) return parsed;
+    }
+  } catch {
+    // Ignore parse errors and proceed to API call
+  }
+
+  // 2. Fetch from IP geolocation API
+  try {
+    const response = await fetch('https://ipapi.co/json/', {
+      signal: AbortSignal.timeout(5000), // 5s timeout
+    });
+
+    if (!response.ok) throw new Error('API request failed');
+
+    const data = await response.json();
+
+    const country = findMatchingCountry(data.country_name);
+    const city = findMatchingCity(country, data.city);
+
+    const result = { country, city };
+
+    // 3. Cache for future visits
+    localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(result));
+
+    return result;
+  } catch {
+    // Silently fail — filters will just stay empty
+    return EMPTY_LOCATION;
+  }
+}
+
 /**
  * Custom hook that detects the user's country and city on first visit.
- * 
- * Strategy:
- * 1. Check localStorage for a cached result first (avoids repeated API calls).
- * 2. If not cached, try the IP-based geolocation API (no permissions needed).
- * 3. Cache the result in localStorage.
- * 
+ *
+ * Uses React Query for built-in caching, loading states, and error handling.
+ * staleTime: Infinity means the location won't be refetched during a session
+ * since an IP address rarely changes mid-session.
+ *
  * Returns: { country, city, isDetecting }
  */
 export function useUserLocation() {
-  const [location, setLocation] = useState({ country: '', city: '' });
-  const [isDetecting, setIsDetecting] = useState(true);
+  const { data, isPending } = useQuery({
+    queryKey: ['userLocation'],
+    queryFn: fetchLocation,
+    staleTime: Infinity,   // Don't refetch — location doesn't change mid-session
+    retry: 1,   
+    refetchOnWindowFocus: false, // ❌ Don't refetch when tab regains focus
+    refetchOnMount: false,           // One retry on failure
+  });
 
-  useEffect(() => {
-    // Check if we already have a cached location
-    try {
-      const cached = localStorage.getItem(LOCATION_STORAGE_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        setLocation(parsed);
-        setIsDetecting(false);
-        return;
-      }
-    } catch {
-      // Ignore parse errors
-    }
-
-    // Use IP-based geolocation (no permission prompt needed)
-    const detectLocation = async () => {
-      try {
-        const response = await fetch('https://ipapi.co/json/', {
-          signal: AbortSignal.timeout(5000), // 5s timeout
-        });
-
-        if (!response.ok) throw new Error('API request failed');
-
-        const data = await response.json();
-
-        const country = findMatchingCountry(data.country_name);
-        const city = findMatchingCity(country, data.city);
-
-        const result = { country, city };
-
-        // Cache for future visits
-        localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(result));
-
-        setLocation(result);
-      } catch {
-        // Silently fail — filters will just stay empty
-        setLocation({ country: '', city: '' });
-      } finally {
-        setIsDetecting(false);
-      }
-    };
-
-    detectLocation();
-  }, []);
-
-  return { ...location, isDetecting };
+  return {
+    country: data?.country ?? '',
+    city: data?.city ?? '',
+    isDetecting: isPending,
+  };
 }

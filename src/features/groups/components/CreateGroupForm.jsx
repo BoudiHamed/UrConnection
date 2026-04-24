@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateGroup } from "../hooks/useCreateGroup";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../auth/hooks/useUser";
 import { COUNTRIES_CITIES, COUNTRY_LIST } from "../../../lib/countries";
 import { groupSchema } from "../../../lib/groupSchema";
 import { PLATFORMS, getPlatform } from "../../../lib/platforms";
@@ -20,6 +21,8 @@ const TOPICS = [
 export default function CreateGroupForm() {
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateGroup();
+  const { data: session } = useUser();
+  const user = session?.user;
 
   const {
     register,
@@ -60,6 +63,7 @@ export default function CreateGroupForm() {
     mutate(
       {
         ...data,
+        user_id: user?.id,
         date: new Date().toISOString(),
       },
       {
@@ -71,223 +75,166 @@ export default function CreateGroupForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="bg-white dark:bg-gray-900 w-full mx-auto p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 mb-8"
-    >
-      <div className="mb-8">
-        <h3 className="text-2xl font-black text-gray-900 dark:text-gray-50">Create New Group</h3>
-        <p className="text-gray-500 dark:text-gray-400">
-          Fill in the details to launch your interest group
-        </p>
-      </div>
+    <div className="w-full bg-white dark:bg-[#000000] min-h-screen pt-12 pb-25 px-4 transition-colors duration-200">
+      <div className="max-w-7xl mx-auto flex flex-col items-center">
+        <button
+          onClick={() => navigate("/")}
+          className="mb-10 self-start lg:ml-20 flex items-center gap-2 group text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+        >
+          <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Cancel and Return</span>
+        </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">
-            Interest *
-          </label>
-          <select
-            {...register("topic")}
-            className={`w-full p-4 border-2 rounded-2xl outline-none transition-all cursor-pointer ${
-              errors.topic
-                ? "border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-400 focus:border-red-300 dark:focus:border-red-800"
-                : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white"
-            }`}
-          >
-            <option value="" disabled>
-              Select an Interest
-            </option>
-            {TOPICS.map((t) => (
-              <option key={t} value={t} className="dark:bg-gray-900">
-                {t}
-              </option>
-            ))}
-          </select>
-          {errors.topic && (
-            <p className="text-red-500 dark:text-red-400 text-xs font-bold ml-1">
-              {errors.topic.message}
-            </p>
-          )}
+        <div className="w-full max-w-5xl mb-20">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-black dark:text-white tracking-tighter leading-[0.85] mb-8">
+            Launch your<br /><span className="text-[#0071e3]">Community.</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium max-w-xl">
+            Design a premium environment for focused growth and meaningful connections.
+          </p>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">
-            Title *
-          </label>
-          <input
-            type="text"
-            placeholder="e.g. Photography Club"
-            {...register("title")}
-            className={`w-full p-4 border-2 rounded-2xl outline-none transition-all ${
-              errors.title
-                ? "border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-400 focus:border-red-300 dark:focus:border-red-800"
-                : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white"
-            }`}
-          />
-          <div className="flex justify-between items-center px-1">
-            {errors.title ? (
-              <p className="text-red-500 dark:text-red-400 text-xs font-bold">{errors.title.message}</p>
-            ) : ( 
-              <div />
-            )}
-            <span
-              className={`text-[10px] font-bold ${selectedTitle.length > 20 ? "text-red-500 dark:text-red-400" : "text-gray-400 dark:text-gray-500"}`}
-            >
-              {selectedTitle.length}/20
-            </span>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-16"
+        >
+          {/* Topic selection */}
+          <div className="space-y-4">
+            <label className="text-[11px]   font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em]  ml-3">
+              Field of Interest
+            </label>
+            <div className="relative ">
+              <select
+                {...register("topic")}
+                className={`w-full mt-2 bg-[#f5f5f7] dark:bg-[#111111] px-8 py-6 rounded-[32px] outline-none appearance-none text-xl font-bold transition-all border-2 cursor-pointer ${
+                  errors.topic ? "border-red-500/50" : "border-transparent focus:border-[#0071e3]"
+                } text-black dark:text-white`}
+              >
+                <option value="" disabled>Select Category</option>
+                {TOPICS.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+              
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">
-            Platform *
-          </label>
-          <select
-            {...register("platform")}
-            className={`w-full p-4 border-2 rounded-2xl outline-none transition-all cursor-pointer ${
-              errors.platform
-                ? "border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-400 focus:border-red-300 dark:focus:border-red-800"
-                : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white"
-            }`}
-          >
-            <option value="" disabled>
-              Select a Platform
-            </option>
-            {PLATFORMS.map((p) => (
-              <option key={p.key} value={p.key} className="dark:bg-gray-900">
-                {p.label}
-              </option>
-            ))}
-          </select>
-          {errors.platform && (
-            <p className="text-red-500 dark:text-red-400 text-xs font-bold ml-1">
-              {errors.platform.message}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">
-            Group Link *
-          </label>
-          <input
-            type="text"
-            placeholder={
-              platformConfig
-                ? platformConfig.placeholder
-                : "Select a platform first"
-            }
-            disabled={!selectedPlatform}
-            {...register("meeting_link")}
-            className={`w-full p-4 border-2 rounded-2xl outline-none transition-all ${
-              !selectedPlatform
-                ? "border-gray-50 dark:border-gray-800 bg-gray-100 dark:bg-gray-950 text-gray-400 dark:text-gray-700 cursor-not-allowed"
-                : errors.meeting_link
-                ? "border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-400 focus:border-red-300 dark:focus:border-red-800"
-                : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white"
-            }`}
-          />
-          {errors.meeting_link && (
-            <p className="text-red-500 dark:text-red-400 text-xs font-bold ml-1">
-              {errors.meeting_link.message}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">
-            Country *
-          </label>
-          <select
-            {...register("country")}
-            className={`w-full p-4 border-2 rounded-2xl outline-none transition-all cursor-pointer ${
-              errors.country
-                ? "border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-400 focus:border-red-300 dark:focus:border-red-800"
-                : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white"
-            }`}
-          >
-            <option value="" disabled>Select a Country</option>
-            {COUNTRY_LIST.map((c) => (
-              <option key={c} value={c} className="dark:bg-gray-900">{c}</option>
-            ))}
-          </select>
-          {errors.country && (
-            <p className="text-red-500 dark:text-red-400 text-xs font-bold ml-1">{errors.country.message}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">
-            City *
-          </label>
-          <select
-            disabled={!selectedCountry}
-            {...register("city")}
-            className={`w-full p-4 border-2 rounded-2xl outline-none transition-all cursor-pointer ${
-              !selectedCountry
-                ? "border-gray-50 dark:border-gray-800 bg-gray-100 dark:bg-gray-950 text-gray-400 dark:text-gray-700 cursor-not-allowed"
-                : errors.city
-                ? "border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-400 focus:border-red-300 dark:focus:border-red-800"
-                : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white"
-            }`}
-          >
-            <option value="" disabled>
-              {selectedCountry ? "Select a City" : "Select a country first"}
-            </option>
-            {availableCities.map((c) => (
-              <option key={c} value={c} className="dark:bg-gray-900">{c}</option>
-            ))}
-          </select>
-          {errors.city && (
-            <p className="text-red-500 dark:text-red-400 text-xs font-bold ml-1">{errors.city.message}</p>
-          )}
-        </div>
-
-        <div className="md:col-span-2 space-y-2">
-          <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">
-            Description *
-          </label>
-          <textarea
-            placeholder="What's your group about? Be detailed (min 50 characters)"
-            {...register("description")}
-            className={`w-full p-4 border-2 rounded-2xl outline-none transition-all min-h-[150px] resize-none ${
-              errors.description
-                ? "border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-900 dark:text-red-400 focus:border-red-300 dark:focus:border-red-800"
-                : "border-gray-50 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-white"
-            }`}
-          />
-          <div className="flex justify-between items-center px-1">
-            {errors.description ? (
-              <p className="text-red-500 dark:text-red-400 text-xs font-bold">
-                {errors.description.message}
-              </p>
-            ) : (
-              <div />
-            )}
-            <span
-              className={`text-[10px] font-bold ${(selectedDescription.length !== 0 && selectedDescription.length < 50) || selectedDescription.length > 500 ? "text-red-500 dark:text-red-400" : "text-gray-400 dark:text-gray-500"}`}
-            >
-              {selectedDescription.length}/500 (min 50)
-            </span>
+          {/* Title input */}
+          <div className="space-y-4">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em] ml-3">
+              Group Name
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Design Collective"
+              {...register("title")}
+              className={`w-full mt-2 bg-[#f5f5f7] dark:bg-[#111111] px-8 py-6 rounded-[32px] outline-none text-xl font-bold transition-all border-2 ${
+                errors.title ? "border-red-500/50" : "border-transparent focus:border-[#0071e3]"
+              } text-black dark:text-white placeholder-gray-300 dark:placeholder-gray-700`}
+            />
           </div>
-        </div>
-      </div>
 
-      <button
-        disabled={isPending}
-        type="submit"
-        className="mt-8 w-full cursor-pointer bg-indigo-600 text-white font-black py-4 rounded-2xl hover:bg-indigo-700 disabled:bg-gray-200 dark:disabled:bg-gray-800 dark:disabled:text-gray-600 transition-all shadow-xl shadow-indigo-100 dark:shadow-none hover:shadow-indigo-200 flex items-center justify-center gap-2"
-      >
-        {isPending ? (
-          <>
-            <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
-            Creating...
-          </>
-        ) : (
-          "Launch Group"
-        )}
-      </button>
-    </form>
+          <div className="space-y-4">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em] ml-3">
+              Meeting Platform
+            </label>
+            <div className="relative">
+              <select
+                {...register("platform")}
+                className={`w-full mt-2 bg-[#f5f5f7] dark:bg-[#111111] px-8 py-6 rounded-[32px] outline-none appearance-none text-xl font-bold transition-all border-2 cursor-pointer ${
+                  errors.platform ? "border-red-500/50" : "border-transparent focus:border-[#0071e3]"
+                } text-black dark:text-white`}
+              >
+                <option value="" disabled>Select Platform</option>
+                {PLATFORMS.map((p) => (
+                  <option key={p.key} value={p.key}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em] ml-3">
+              Group Link
+            </label>
+            <input
+              type="text"
+              placeholder={platformConfig ? platformConfig.placeholder : "Select Platform First"}
+              disabled={!selectedPlatform}
+              {...register("meeting_link")}
+              className={`w-full mt-2 bg-[#f5f5f7] dark:bg-[#111111] px-8 py-6 rounded-[32px] outline-none text-xl font-bold transition-all border-2 ${
+                errors.meeting_link ? "border-red-500/50" : "border-transparent focus:border-[#0071e3]"
+              } text-black dark:text-white placeholder-gray-300 dark:placeholder-gray-700 disabled:opacity-50`}
+            />
+          </div>
+
+          <div className="space-y-4">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em] ml-3">
+              Network Location
+            </label>
+            <div className="relative">
+              <select
+                {...register("country")}
+                className={`w-full mt-2 bg-[#f5f5f7] dark:bg-[#111111] px-8 py-6 rounded-[32px] outline-none appearance-none text-xl font-bold transition-all border-2 cursor-pointer ${
+                  errors.country ? "border-red-500/50" : "border-transparent focus:border-[#0071e3]"
+                } text-black dark:text-white`}
+              >
+                <option value="" disabled>Select Country</option>
+                {COUNTRY_LIST.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em] ml-3">
+              Specific City
+            </label>
+            <div className="relative">
+              <select
+                disabled={!selectedCountry}
+                {...register("city")}
+                className={`w-full mt-2 bg-[#f5f5f7] dark:bg-[#111111] px-8 py-6 rounded-[32px] outline-none appearance-none text-xl font-bold transition-all border-2 cursor-pointer ${
+                  errors.city ? "border-red-500/50" : "border-transparent focus:border-[#0071e3]"
+                } text-black dark:text-white disabled:opacity-50`}
+              >
+                <option value="" disabled>{selectedCountry ? "Select City" : "Select Country First"}</option>
+                {availableCities.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="md:col-span-2 space-y-4">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] ml-3">
+              Group Description
+            </label>
+            <textarea
+              placeholder="What is the objective of this connection?"
+              {...register("description")}
+              className={`w-full mt-2 bg-[#f5f5f7] dark:bg-[#111111] px-8 py-8 rounded-[40px] outline-none text-xl font-bold transition-all border-2 min-h-[240px] resize-none ${
+                errors.description ? "border-red-500/50" : "border-transparent focus:border-[#0071e3]"
+              } text-black dark:text-white placeholder-gray-300 dark:placeholder-gray-700`}
+            />
+          </div>
+
+          <div className="md:col-span-2 pt-10">
+            <button
+              disabled={isPending}
+              type="submit"
+              className="w-full bg-[#0071e3] text-white font-black py-8 rounded-full text-2xl hover:brightness-110 active:scale-[0.98] transition-all disabled:grayscale disabled:opacity-50 flex items-center justify-center gap-4 cursor-pointer"
+            >
+              {isPending ? (
+                <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+              ) : (
+                "Launch Channel"
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
