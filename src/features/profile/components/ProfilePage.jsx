@@ -30,13 +30,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#000000] py-20 px-6 transition-colors duration-200">
+    <div className="min-h-screen bg-white dark:bg-[#000000] py-10 px-6 transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-20">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-black dark:text-white tracking-tighter leading-[0.85] mb-8">
+        <div className="mb-10">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-black dark:text-white tracking-tighter leading-[0.85] mb-6">
             Your <br /><span className="text-[#0071e3]">Profile.</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium max-w-xl">
+          <p className="text-sm md:text-lg text-gray-500 dark:text-gray-400 font-medium max-w-xl">
             Manage your account details and view the communities you've launched.
           </p>
         </div>
@@ -57,16 +57,16 @@ export default function ProfilePage() {
               <ProfileAvatar user={user} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1  md:grid-cols-2 gap-10">
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Display Name</p>
-                <p className="text-2xl font-bold text-black dark:text-white">
+                <p className="text-xl font-bold text-black dark:text-white">
                   {user?.user_metadata?.display_name || "Not set"}
                 </p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Email Address</p>
-                <p className="text-2xl font-bold text-black dark:text-white">{user?.email}</p>
+                <p className="text-xl font-bold text-black dark:text-white">{user?.email}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Phone Number</p>
@@ -104,13 +104,13 @@ export default function ProfilePage() {
           </div>
 
           {isGroupsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-[#f5f5f7] dark:bg-[#111111] rounded-[32px] h-[400px] animate-pulse" />
               ))}
             </div>
           ) : groups?.length > 0 ? (
-            <div className="grid grid-cols-1 mx-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
+            <div className="grid grid-cols-1 mx-4 md:grid-cols-2  place-items-center lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
               {groups.map((group) => (
                 <GroupCard key={group.id} group={group} />
               ))}

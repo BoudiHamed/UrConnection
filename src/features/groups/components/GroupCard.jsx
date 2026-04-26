@@ -11,9 +11,9 @@ export default function GroupCard({ group }) {
   const platformInfo = getPlatform(platform);
 
   return (
-    <div className="flex flex-col min-w-60  max-w-70 border-gray-200 bg-[#f5f5f7] dark:bg-[#121213] rounded-3xl pt-6 pb-3 px-4 hover:scale-105 transition-all duration-200 relative group overflow-hidden border-2 shadow-lg hover:shadow-2xl hover:border-gray-300 dark:border-black dark:hover:border-[#333336]">
+    <div className="flex flex-col min-w-70  max-w-70 border-gray-200 bg-[#f5f5f7] dark:bg-[#121213] rounded-4xl pt-6 pb-3 px-6 hover:scale-105 transition-all duration-200 relative group overflow-hidden border shadow-lg hover:shadow-2xl hover:border-gray-300 dark:border-black dark:hover:border-[#333336]">
       {/* Subject Tag & Platform */}
-      <div className="flex justify-between items-start mb-10">
+      <div className="flex justify-between items-start mb-8">
         <div className="flex flex-wrap  gap-2">
           <span className="bg-white dark:bg-black text-[10px] font-bold text-black dark:text-white px-3 py-1 rounded-full uppercase tracking-widest border border-gray-100 dark:border-[#333336]">
             {topic}
@@ -54,16 +54,14 @@ export default function GroupCard({ group }) {
         </button>
       </div>
 
-      <div className="flex-1 border-b border-gray-400/50 dark:border-[#333336]/50 pb-4 mb-4">
+      <div className="flex-1 border-b border-gray-400/50 dark:border-[#333336]/50 pb-10 mb-2">
         <h3 className="text-[14px] md:text-[16px] lg:text-[18px] font-black text-black dark:text-white mb-3 tracking-tighter leading-tight">
           {title}
         </h3>
-        <p className="text-[6px] md:text-[8px] lg:text-[10px]   text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed font-medium break-all">
+        <p className="text-[8px] md:text-[10px] lg:text-[12px]   text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed font-medium  truncate">
           {description}
         </p>
       </div>
-
- 
 
       <div className=" grid grid-cols-1 ">
         <a
@@ -72,22 +70,22 @@ export default function GroupCard({ group }) {
           rel="noreferrer"
           className=" mx-auto text-[12px] md:text-[14px] lg:text-[16px] px-6 text-center dark:text-gray-500 
           hover:text-white rounded-full
-          text-black hover:bg-black font-bold    dark:hover:bg-white dark:hover:text-black hover:shadow-lg py-3 transition-all duration-200 cursor-pointer"
+          text-black hover:bg-black font-bold    dark:hover:bg-white  dark:hover:text-black hover:shadow-lg py-2 transition-all duration-200 cursor-pointer"
         >
-          Join Room
+          Connect now
         </a>
         <Link
           to={`/groups/${id}`}
-          className="w-full text-[12px] md:text-[14px] lg:text-[16px] mt-0.5 text-center border-black  dark:text-gray-500 
+          className="w-[70%] mx-auto text-[12px] md:text-[14px] lg:text-[16px]  text-center border-black  dark:text-gray-500 
           hover:text-white rounded-full
-          text-black hover:bg-black font-bold   dark:hover:bg-white dark:hover:text-black hover:shadow-lg py-3 transition-all duration-200 cursor-pointer"
+          text-black hover:bg-black font-bold   dark:hover:bg-white dark:hover:text-black hover:shadow-lg py-2 mb-3 transition-all duration-200 cursor-pointer"
         >
           View Details
         </Link>
       </div>
-           <div className="flex flex-col gap-3 pt-2 pb-0.5 border-t border-gray-400/50 dark:border-[#333336]/50">
+      <div className="flex flex-col gap-3 pt-4 pb-0.5 border-t border-gray-400/50 dark:border-[#333336]/50">
         {country && (
-          <span className="flex items-center text-[6px] md:text-[8px] lg:text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest">
+          <span className="flex items-center   text-[8px] md:text-[10px] lg:text-[12px] text-gray-400 dark:text-gray-500 font-bold uppercase">
             <svg
               className="w-3 h-3 text-red-500/50 mr-2"
               fill="none"
@@ -107,7 +105,7 @@ export default function GroupCard({ group }) {
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            {[city, country]?.join(", ")}
+            <p className="truncate">{[city, country]?.join(", ")}</p>
           </span>
         )}
       </div>

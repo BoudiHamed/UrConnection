@@ -104,7 +104,7 @@ export default function GroupDetail() {
                 rel="noreferrer"
                 className="group inline-flex items-center gap-6 bg-[#0071e3] text-white px-12 py-6 rounded-full font-bold text-lg hover:brightness-110 transition-all shadow-2xl shadow-[#0071e3]/30 cursor-pointer"
               >
-                Launch Connection
+                Connect now
                 <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
               </a>
             </div>

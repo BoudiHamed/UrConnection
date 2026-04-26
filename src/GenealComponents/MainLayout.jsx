@@ -2,7 +2,6 @@ import ScrollToTop from "./ScrollToTop";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../features/auth/hooks/useUser";
 import { signOut } from "../services/auth.service";
-import ProfileAvatar from "../features/profile/components/ProfileAvatar";
 
 export default function MainLayout() {
 
@@ -12,6 +11,8 @@ export default function MainLayout() {
   const { data: session } = useUser();
   const user = session?.user;
   const avatarUrl = user?.user_metadata?.avatar_url;
+  const displayName = user?.user_metadata?.display_name || user?.email || "?";
+  const initials = displayName.charAt(0).toUpperCase();
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -38,8 +39,21 @@ export default function MainLayout() {
               <div className="flex gap-4 items-center">
                 <Link to="/profile" className="flex gap-2 items-center">
                 <div className="w-6 h-6 border border-gray-300 dark:border-white/5 rounded-full overflow-hidden">
-                  <img className="w-full h-full object-cover" src={avatarUrl} alt="profile-picture" />
+                  {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-[#0071e3] flex items-center justify-center">
+              <span className="text-white text-contain">
+                {initials}
+              </span>
+            </div>
+          )}
                 </div>
+                
                 </Link>
                 <Link
                   to="/profile"
