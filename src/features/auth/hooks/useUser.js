@@ -13,7 +13,8 @@ export const useUser = () => {
       queryClient.setQueryData(["session"], session);
       if (event === "SIGNED_OUT") {
         queryClient.removeQueries({ queryKey: ["session"] });
-      }
+        sessionStorage.clear();
+        localStorage.clear();      }
     });
 
     return () => {
